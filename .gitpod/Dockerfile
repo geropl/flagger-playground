@@ -40,3 +40,5 @@ USER gitpod
 
 # Install 'cargo watch' for better dev experience
 RUN bash -c "cargo install cargo-watch cargo-edit"
+# Install musl for building a static binary
+RUN bash -c "rustup target add x86_64-unknown-linux-musl"
