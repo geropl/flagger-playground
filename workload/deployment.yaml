@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: responder
+  labels:
+    app: responder
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: responder
+  template:
+    metadata:
+      labels:
+        app: responder
+    spec:
+      containers:
+      - name: main
+        image: geropl/responder:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        env:
+        - name: VERSION
+          value: "1"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
