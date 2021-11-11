@@ -1,0 +1,31 @@
+FROM gitpod/workspace-full:latest
+
+USER root
+
+### kubectl ###
+RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
+    # really 'xenial'
+    && add-apt-repository -yu "deb https://apt.kubernetes.io/ kubernetes-xenial main" \
+    && install-packages kubectl=1.20.0-00 \
+    && kubectl completion bash > /usr/share/bash-completion/completions/kubectl
+
+RUN curl -fsSL -o /usr/bin/kubectx https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx && chmod +x /usr/bin/kubectx \
+    && curl -fsSL -o /usr/bin/kubens  https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens  && chmod +x /usr/bin/kubens
+
+RUN curl -fsSL https://github.com/kubernetes-sigs/kubebuilder/releases/download/v2.3.2/kubebuilder_2.3.2_linux_amd64.tar.gz | tar -xz -C /tmp/ \
+    && sudo mkdir -p /usr/local/kubebuilder \
+    && sudo mv /tmp/kubebuilder_2.3.2_linux_amd64/* /usr/local/kubebuilder \
+    && rm -rf /tmp/*
+
+### Google Cloud ###
+# not installed via repository as then 'docker-credential-gcr' is not available
+ARG GCS_DIR=/opt/google-cloud-sdk
+ENV PATH=$GCS_DIR/bin:$PATH
+RUN sudo chown gitpod: /opt \
+    && mkdir $GCS_DIR \
+    && curl -fsSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-354.0.0-linux-x86_64.tar.gz \
+    | tar -xzvC /opt \
+    && /opt/google-cloud-sdk/install.sh --quiet --usage-reporting=false --bash-completion=true \
+    --additional-components docker-credential-gcr alpha beta \
+    # needed for access to our private registries
+    && docker-credential-gcr configure-docker
