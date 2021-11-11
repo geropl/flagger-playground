@@ -29,3 +29,9 @@ RUN sudo chown gitpod: /opt \
     --additional-components docker-credential-gcr alpha beta \
     # needed for access to our private registries
     && docker-credential-gcr configure-docker
+
+# Set Application Default Credentials (ADC) based on user-provided env var
+RUN echo ". /workspace/flagger-playground/scripts/setup-google-adc.sh" >> ~/.bashrc
+
+# Adjust permissions
+RUN chown -R gitpod:gitpod ~/.config

@@ -1,2 +1,6 @@
 image:
   file: .gitpod/Dockerfile
+
+tasks:
+- command: |
+    BROWSER="" gcloud auth login
