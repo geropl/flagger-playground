@@ -1,6 +1,16 @@
+
 image:
   file: .gitpod/Dockerfile
 
 tasks:
 - command: |
     BROWSER="" gcloud auth login
+- name: responder
+  init: |
+    cargo build
+  command: |
+    cargo run
+
+vscode:
+  extensions:
+    - matklad.rust-analyzer

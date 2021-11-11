@@ -35,3 +35,8 @@ RUN echo ". /workspace/flagger-playground/scripts/setup-google-adc.sh" >> ~/.bas
 
 # Adjust permissions
 RUN chown -R gitpod:gitpod ~/.config
+
+USER gitpod
+
+# Install 'cargo watch' for better dev experience
+RUN bash -c "cargo install cargo-watch cargo-edit"
