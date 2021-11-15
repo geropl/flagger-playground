@@ -35,6 +35,15 @@ RUN echo ". /workspace/flagger-playground/scripts/setup-google-adc.sh" >> ~/.bas
 
 # Adjust permissions
 RUN chown -R gitpod:gitpod ~/.config
+RUN chown -R gitpod:gitpod ~/.docker
+
+### Helm3 ###
+RUN mkdir -p /tmp/helm/ \
+    && curl -fsSL https://get.helm.sh/helm-v3.7.1-linux-amd64.tar.gz | tar -xzvC /tmp/helm/ --strip-components=1 \
+    && cp /tmp/helm/helm /usr/local/bin/helm \
+    && cp /tmp/helm/helm /usr/local/bin/helm3 \
+    && rm -rf /tmp/helm/ \
+    && helm completion bash > /usr/share/bash-completion/completions/helm
 
 USER gitpod
 
@@ -42,3 +51,7 @@ USER gitpod
 RUN bash -c "cargo install cargo-watch cargo-edit"
 # Install musl for building a static binary
 RUN bash -c "rustup target add x86_64-unknown-linux-musl"
+
+# install istioctl
+RUN bash -c "curl -sL https://istio.io/downloadIstioctl | sh -"
+ENV PATH=$PATH:/home/gitpod/.istioctl/bin

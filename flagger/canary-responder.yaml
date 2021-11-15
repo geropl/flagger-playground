@@ -1,0 +1,40 @@
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: responder
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: responder
+  service:
+    port: 8000
+    targetPort: 8000
+    portDiscovery: true
+  analysis:
+    # schedule interval (default 60s)
+    interval: 10s
+    # max number of failed metric checks before rollback
+    threshold: 10
+    # max traffic percentage routed to canary [%]
+    maxWeight: 50
+    # canary increment step [%]
+    stepWeight: 2
+    # promotion increment step (default 100) [%]
+    stepWeightPromotion: 100
+    metrics:
+    - name: request-success-rate
+      thresholdRange:
+        # min. req success rate (non-5xx responses) [%]
+        min: 99
+      interval: 30s
+    - name: request-duration
+      thresholdRange:
+        # max. req duration P99 [ms]
+        max: 500
+      interval: 30s
+    webhooks:
+    - name: load-test
+      url: http://flagger-loadtester.test/
+      metadata:
+        cmd: "hey -z 1m -q 10 -c 2 http://responder-canary.default:8000/"

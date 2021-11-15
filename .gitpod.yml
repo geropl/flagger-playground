@@ -7,11 +7,16 @@ tasks:
     BROWSER="" gcloud auth login
 - name: responder
   init: |
-    cargo build
+    cargo build --release
+    cargo build --debug
   command: |
     cargo run
+- name: deploy
+  init: |
+    helm repo add flagger https://flagger.app
 
 vscode:
   extensions:
     - matklad.rust-analyzer
     - bungcip.better-toml
+    - ms-azuretools.vscode-docker
